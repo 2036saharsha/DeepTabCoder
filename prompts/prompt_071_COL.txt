@@ -1,0 +1,79 @@
+Task: Given a table and a question, the goal is to write a Python program to answer the question using the provided dataset.
+
+Steps:
+
+1. Define necessary functions that can be reused for other problems in this type of task.
+2. Ensure that functions are general and flexible enough to be reused in different questions or tables.
+3. Define a main function called solution(table_data) that accepts the table data as input and returns the answer to the question.
+4. Import pandas, load the dataset, analyze its structure, and run the solution function.
+5. Ensure no hallucination of non-existent table headers and structure.
+6. Avoid making assumptions about missing or empty column headers.
+7. Make sure the code is modular and reusable for various queries on the table.
+
+Dataset Format: The dataset will always be structured as follows:
+
+TABLE:
+| Field             | Value                      
+|-------------------|--------------------------|
+| Rank              | 1 |
+| Country           | Switzerland |
+| Cost of Living Index | 101.1 |
+| Rent Index        | 46.5 |
+| Cost of Living Plus Rent Index | 74.9 |
+| Groceries Index   | 109.1 |
+| Restaurant Price Index | 97.0 |
+| Local Purchasing Power Index | 158.7 |
+
+Question: What is the product code for the product with the brand hacendado?
+
+Solution Example Code:
+
+import pandas as pd
+
+def load_data(file_path):
+    try:
+        df = pd.read_parquet(file_path)
+        return df
+    except Exception as e:
+        print(f"Error loading data from {file_path}: {e}")
+        return None
+
+def get_row_by_name(df, key):
+    # Check if the column exists in the DataFrame and return its value in the first row
+    if key in df.columns:
+        return df[key].iloc[0]
+    return None
+
+# Solution Function
+def solution(df):
+    # Filter the DataFrame for the row where the brand is 'Hacendado'
+    product_row = df[df['brands'].apply(lambda x: 'Hacendado' in x)]
+
+    # Get the product code
+    product_code = get_row_by_name(product_row, 'code')
+
+    return product_code
+
+print(solution(df))
+
+# Example usage with a loaded dataset, always use this path
+df = load_data("../data/datasets/competition/071_COL/all.parquet")
+# Just print the solution as shown below, do not print anything else
+print(solution(df))
+
+Answer: 00001212
+
+Note: The load_data function should be flexible enough to handle various datasets. Similarly, get_row_by_name is a general helper function for retrieving a value from a specific column by name.
+
+Types of Answers Expected:
+
+Boolean: Valid answers include True/False, Y/N, Yes/No (all case insensitive).
+Category: A value from a cell (or a substring of a cell) in the dataset.
+Number: A numerical value from a cell in the dataset, which may represent a computed statistic (e.g., average, maximum, minimum).
+List[category]: A list containing a fixed number of categories. The expected format is: "['cat', 'dog']". Pay attention to the wording of the question to determine if uniqueness is required or if repeated values are allowed.
+List[number]: Similar to List[category], but with numbers as its elements.
+
+Write a code for this question: 
+
+[[QUESTION]]
+

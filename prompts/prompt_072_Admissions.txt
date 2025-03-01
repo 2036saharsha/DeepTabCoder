@@ -1,0 +1,88 @@
+Task: Given a table and a question, the goal is to write a Python program to answer the question using the provided dataset.
+
+Steps:
+
+1. Define necessary functions that can be reused for other problems in this type of task.
+2. Ensure that functions are general and flexible enough to be reused in different questions or tables.
+3. Define a main function called solution(table_data) that accepts the table data as input and returns the answer to the question.
+4. Import pandas, load the dataset, analyze its structure, and run the solution function.
+5. Ensure no hallucination of non-existent table headers and structure.
+6. Avoid making assumptions about missing or empty column headers.
+7. Make sure the code is modular and reusable for various queries on the table.
+
+Dataset Format: The dataset will always be structured as follows:
+
+TABLE:
+| Field             | Value                      
+|-------------------|--------------------------|
+| Serial No.        | 1.0 |
+| GRE Score         | 337.0 |
+| TOEFL Score       | 118.0 |
+| University Rating | 4.0 |
+| SOP               | 4.5 |
+| LOR               | 4.5 |
+| CGPA              | 9.65 |
+| Research          | 1.0 |
+| Chance of Admit   | 0.92 |
+
+Question: What is the toefl score for the student with a 1.0 serial number?
+
+Solution Example Code:
+
+import pandas as pd
+
+def load_data(file_path):
+    try:
+        df = pd.read_parquet(file_path)
+        return df
+    except Exception as e:
+        print(f"Error loading data from {file_path}: {e}")
+        return None
+
+def get_row_by_name(df, key):
+    # Perform case-insensitive search for the key in the columns
+    for column in df.columns:
+        if column.lower() == key.lower():
+            return column
+    return None
+
+def solution(df):
+    # Serial No. to search for in the question
+    serial_no_to_find = 1.0  
+    
+    # Ensure case-insensitive column search
+    serial_no_column = get_row_by_name(df, "Serial No.")  
+    toefl_score_column = get_row_by_name(df, "TOEFL Score")
+
+    if serial_no_column and toefl_score_column:
+        # Filter the row based on the Serial No.
+        student_row = df[df[serial_no_column] == serial_no_to_find]
+        
+        # Return the TOEFL score for that specific student
+        if not student_row.empty:
+            return student_row[toefl_score_column].iloc[0]
+        else:
+            return None  # Return None if no student is found with that serial number
+    return None
+
+# Example usage with a loaded dataset, always use this path
+df = load_data("../data/datasets/competition/072_Admissions/all.parquet")
+# Just print the solution as shown below, do not print anything else
+print(solution(df))
+
+Answer: 118
+
+Note: The load_data function should be flexible enough to handle various datasets. Similarly, get_row_by_name is a general helper function for retrieving a value from a specific column by name.
+
+Types of Answers Expected:
+
+Boolean: Valid answers include True/False, Y/N, Yes/No (all case insensitive).
+Category: A value from a cell (or a substring of a cell) in the dataset.
+Number: A numerical value from a cell in the dataset, which may represent a computed statistic (e.g., average, maximum, minimum).
+List[category]: A list containing a fixed number of categories. The expected format is: "['cat', 'dog']". Pay attention to the wording of the question to determine if uniqueness is required or if repeated values are allowed.
+List[number]: Similar to List[category], but with numbers as its elements.
+
+Write a code for this question: 
+
+[[QUESTION]]
+

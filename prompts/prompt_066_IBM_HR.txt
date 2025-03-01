@@ -1,0 +1,106 @@
+Task: Given a table and a question, the goal is to write a Python program to answer the question using the provided dataset.
+
+Steps:
+
+1. Define necessary functions that can be reused for other problems in this type of task.
+2. Ensure that functions are general and flexible enough to be reused in different questions or tables.
+3. Define a main function called solution(table_data) that accepts the table data as input and returns the answer to the question.
+4. Import pandas, load the dataset, analyze its structure, and run the solution function.
+5. Ensure no hallucination of non-existent table headers and structure.
+6. Avoid making assumptions about missing or empty column headers.
+7. Make sure the code is modular and reusable for various queries on the table.
+
+Dataset Format: The dataset will always be structured as follows:
+
+TABLE:
+| Field             | Value                      
+|-------------------|--------------------------|
+| Age               | 41 |
+| Attrition         | Yes |
+| BusinessTravel    | Travel_Rarely |
+| DailyRate         | 1102 |
+| Department        | Sales |
+| DistanceFromHome  | 1 |
+| Education         | 2 |
+| EducationField    | Life Sciences |
+| EmployeeCount     | 1 |
+| EmployeeNumber    | 1 |
+| EnvironmentSatisfaction | 2 |
+| Gender            | Female |
+| HourlyRate        | 94 |
+| JobInvolvement    | 3 |
+| JobLevel          | 2 |
+| JobRole           | Sales Executive |
+| JobSatisfaction   | 4 |
+| MaritalStatus     | Single |
+| MonthlyIncome     | 5993 |
+| MonthlyRate       | 19479 |
+| NumCompaniesWorked | 8 |
+| Over18            | Y |
+| OverTime          | Yes |
+| PercentSalaryHike | 11 |
+| PerformanceRating | 3 |
+| RelationshipSatisfaction | 1 |
+| StandardHours     | 80 |
+| StockOptionLevel  | 0 |
+| TotalWorkingYears | 8 |
+| TrainingTimesLastYear | 0 |
+| WorkLifeBalance   | 1 |
+| YearsAtCompany    | 6 |
+| YearsInCurrentRole | 4 |
+| YearsSinceLastPromotion | 0 |
+| YearsWithCurrManager | 5 |
+
+Question: What is the average job satisfaction for employees who have worked for more than 5 years
+
+Solution Example Code:
+
+import pandas as pd
+
+# load the data
+def load_data(file_path):
+    try:
+        df = pd.read_parquet(file_path)
+        return df
+    except Exception as e:
+        print(f"Error loading data from {file_path}: {e}")
+        return None
+
+# Get the row by name
+def get_row_by_name(df, key):
+    if key in df.columns:
+        return df[key].iloc[0]
+    return None
+
+# Solution Function
+def solution(df):
+    # Filter the dataset for employees who have worked more than 5 years
+    filtered_df = df[df['YearsAtCompany'] > 5]
+    
+    # Calculate the average job satisfaction for this group
+    avg_job_satisfaction = filtered_df['JobSatisfaction'].mean()
+
+    # Return the result
+    return avg_job_satisfaction
+
+# Example usage with a loaded dataset, always use this path
+df = load_data("./datasets/competition/066_IBM_HR/all.parquet")
+# Just print the solution as shown below, do not print anything else
+print(solution(df))
+
+Answer: 2.755043227665706
+
+Note: The load_data function should be flexible enough to handle various datasets. Similarly, get_row_by_name is a general helper function for retrieving a value from a specific column by name.
+
+Types of Answers Expected:
+
+Boolean: Valid answers include True/False, Y/N, Yes/No (all case insensitive).
+Category: A value from a cell (or a substring of a cell) in the dataset.
+Number: A numerical value from a cell in the dataset, which may represent a computed statistic (e.g., average, maximum, minimum).
+List[category]: A list containing a fixed number of categories. The expected format is: "['cat', 'dog']". Pay attention to the wording of the question to determine if uniqueness is required or if repeated values are allowed.
+List[number]: Similar to List[category], but with numbers as its elements.
+
+Write a code for this question: 
+
+[[QUESTION]]
+

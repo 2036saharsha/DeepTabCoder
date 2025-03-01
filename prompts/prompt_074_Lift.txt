@@ -1,0 +1,87 @@
+Task: Given a table and a question, the goal is to write a Python program to answer the question using the provided dataset.
+
+Steps:
+
+1. Define necessary functions that can be reused for other problems in this type of task.
+2. Ensure that functions are general and flexible enough to be reused in different questions or tables.
+3. Define a main function called solution(table_data) that accepts the table data as input and returns the answer to the question.
+4. Import pandas, load the dataset, analyze its structure, and run the solution function.
+5. Ensure no hallucination of non-existent table headers and structure.
+6. Avoid making assumptions about missing or empty column headers.
+7. Make sure the code is modular and reusable for various queries on the table.
+
+Dataset Format: The dataset will always be structured as follows:
+
+TABLE:
+| Field             | Value                      
+|-------------------|--------------------------|
+| Lifter Name       | Jessica Wilson |
+| Age               | 46 |
+| Weight Class      | 59 kg |
+| Lift Type         | Bench Press |
+| Amount Lifted (kg) | 269 |
+
+Question: What is the amount lifted by the lifter aged 46 and with a 59 kg weight class??
+
+Solution Example Code:
+
+import pandas as pd
+
+def load_data(file_path):
+    try:
+        df = pd.read_parquet(file_path)
+        return df
+    except Exception as e:
+        print(f"Error loading data from {file_path}: {e}")
+        return None
+
+# Get the row by name
+def get_row_by_name(df, key):
+    # Perform case-insensitive search for the key in the columns
+    for column in df.columns:
+        if column.lower() == key.lower():
+            return column
+    return None
+
+def solution(df):
+    # Age and Weight Class to search for in the question
+    age_to_find = 46 
+    weight_class_to_find = "59 kg" 
+    
+    # Ensure case-insensitive column search
+    age_column = get_row_by_name(df, "Age")  # Case-insensitive search for 'Age'
+    weight_class_column = get_row_by_name(df, "Weight Class") 
+    amount_lifted_column = get_row_by_name(df, "Amount Lifted (kg)")  
+
+    if age_column and weight_class_column and amount_lifted_column:
+        # Filter the row based on both Age and Weight Class
+        lifter_row = df[(df[age_column] == age_to_find) & (df[weight_class_column] == weight_class_to_find)]
+        
+        # Return the Amount Lifted for that specific lifter
+        if not lifter_row.empty:
+            return lifter_row[amount_lifted_column].iloc[0]
+        else:
+            return None  # Return None if no matching record is found
+    return None
+
+# Example usage with a loaded dataset, always use this path
+df = load_data("../data/datasets/competition/074_Lift/all.parquet")
+# Just print the solution as shown below, do not print anything else
+print(solution(df))
+
+Answer: 269
+
+Note: The load_data function should be flexible enough to handle various datasets. Similarly, get_row_by_name is a general helper function for retrieving a value from a specific column by name.
+
+Types of Answers Expected:
+
+Boolean: Valid answers include True/False, Y/N, Yes/No (all case insensitive).
+Category: A value from a cell (or a substring of a cell) in the dataset.
+Number: A numerical value from a cell in the dataset, which may represent a computed statistic (e.g., average, maximum, minimum).
+List[category]: A list containing a fixed number of categories. The expected format is: "['cat', 'dog']". Pay attention to the wording of the question to determine if uniqueness is required or if repeated values are allowed.
+List[number]: Similar to List[category], but with numbers as its elements.
+
+Write a complete code for this question: 
+
+[[QUESTION]]
+

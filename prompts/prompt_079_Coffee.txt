@@ -1,0 +1,97 @@
+Task: Given a table and a question, the goal is to write a Python program to answer the question using the provided dataset.
+
+Steps:
+
+1. Define necessary functions that can be reused for other problems in this type of task.
+2. Ensure that functions are general and flexible enough to be reused in different questions or tables.
+3. Define a main function called solution(table_data) that accepts the table data as input and returns the answer to the question.
+4. Import pandas, load the dataset, analyze its structure, and run the solution function.
+5. Ensure no hallucination of non-existent table headers and structure.
+6. Avoid making assumptions about missing or empty column headers.
+7. Make sure the code is modular and reusable for various queries on the table.
+
+Dataset Format: The dataset will always be structured as follows:
+
+TABLE:
+| Field             | Value                      
+|-------------------|--------------------------|
+| transaction_id    | 1 |
+| transaction_qty   | 2 |
+| store_id          | 5 |
+| store_location    | Lower Manhattan |
+| product_id        | 32 |
+| unit_price        | 3.0 |
+| product_category  | Coffee |
+| product_type      | Gourmet brewed coffee |
+| product_detail    | Ethiopia Rg |
+| Revenue           | 6,00 US$ |
+| Month             | 1 |
+| Month_1           | Jan |
+| Weekday           | 7 |
+| Weekday_1         | Sun |
+| Hour              | 7 |
+
+Question: What is the Revenue for the transaction that occurred in Month 1 and on a Sunday (Weekday 7)?
+
+Solution Example Code:
+
+import pandas as pd
+
+def load_data(file_path):
+    try:
+        df = pd.read_parquet(file_path)
+        return df
+    except Exception as e:
+        print(f"Error loading data from {file_path}: {e}")
+        return None
+
+# Get the row by name (case-insensitive)
+def get_row_by_name(df, key):
+    # Perform case-insensitive search for the key in the columns
+    for column in df.columns:
+        if column.lower() == key.lower():
+            return column
+    return None
+
+def solution(df):
+    # Month and Weekday to search for in the question
+    month_to_find = 1  
+    weekday_to_find = 7
+    
+    # Ensure case-insensitive column search
+    month_column = get_row_by_name(df, "Month")  
+    weekday_column = get_row_by_name(df, "Weekday") 
+    revenue_column = get_row_by_name(df, "Revenue")  
+
+    if month_column and weekday_column and revenue_column:
+        # Filter the row based on both month and weekday
+        record_row = df[(df[month_column] == month_to_find) & (df[weekday_column] == weekday_to_find)]
+        
+        # Return the revenue for that specific record
+        if not record_row.empty:
+            return record_row[revenue_column].iloc[0]
+        else:
+            return None  # Return None if no matching record is found
+    return None
+
+# Example usage with a loaded dataset, always use this path
+df = load_data("../data/datasets/competition/079_Coffee/all.parquet")
+# Just print the solution as shown below, do not print anything else
+print(solution(df))
+
+Answer: 6,00 US$
+
+Note: The load_data function should be flexible enough to handle various datasets. Similarly, get_row_by_name is a general helper function for retrieving a value from a specific column by name.
+
+Types of Answers Expected:
+
+Boolean: Valid answers include True/False, Y/N, Yes/No (all case insensitive).
+Category: A value from a cell (or a substring of a cell) in the dataset.
+Number: A numerical value from a cell in the dataset, which may represent a computed statistic (e.g., average, maximum, minimum).
+List[category]: A list containing a fixed number of categories. The expected format is: "['cat', 'dog']". Pay attention to the wording of the question to determine if uniqueness is required or if repeated values are allowed.
+List[number]: Similar to List[category], but with numbers as its elements.
+
+Write a code for this question: 
+
+[[QUESTION]]
+
